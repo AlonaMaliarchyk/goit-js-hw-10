@@ -12,29 +12,25 @@ let inputValue;
 
 input.addEventListener('input', debounce(handleInput, DEBOUNCE_DELAY));
 
-    function handleInput(event){
-        inputValue = event.target.value.trim();
-        if (inputValue.length > 1) {
-            fetchCountries(inputValue)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(response.status);
-            }
-        return response.json();
-        })
-        .then(data => {
-            fillContainers(data);
-        })
-        .catch(error => {
-            Notiflix.Notify.failure("Oops, there is no country with that name");
-            clearContainers();
-        });
-    } else if (inputValue.length <= 1) {
-            Notiflix.Notify.info("Too many matches found. Please enter a more specific name.");
-            clearContainers();
-        }
+function handleInput(event) {
+    inputValue = event.target.value.trim();
+    if (inputValue.length > 1) {
+        fetchCountries(inputValue)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                fillContainers(data);
+            })
+            .catch(error => {
+                clearContainers();
+                Notiflix.Notify.failure("Oops, there is no country with that name");
+            });
     }
-
+}
 
 function fillContainers(countries) {
     clearContainers();
@@ -42,6 +38,8 @@ function fillContainers(countries) {
         fillCountriesList(countries);
     } else if (countries.length === 1) {
         fillCountryInfo(countries[0]);
+    } else if (countries.length > 10) { 
+        Notiflix.Notify.info("Too many matches found. Please enter a more specific name.");
     }
 }
 
@@ -58,7 +56,7 @@ function fillCountriesList(countries) {
 }
 
 function fillCountryInfo(country) { 
-    html = `<ul class="coutry">
+    let html = `<ul class="coutry">
         <li><img class="flag_svg" src="${country.flags.svg}" alt="flag" width="40"> <span>${country.name.official}</span></li>
         <li><b>Capital: </b>${country.capital}</li>
         <li><b>Population: </b>${country.population}</li>
@@ -69,6 +67,5 @@ function fillCountryInfo(country) {
 
 function clearContainers() { 
     ulList.innerHTML = '';
-    countryInfo.innerHTML = '';
-    
+    countryInfo.innerHTML = '';    
 }
