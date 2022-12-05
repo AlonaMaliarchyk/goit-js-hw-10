@@ -1,4 +1,5 @@
 import './css/styles.css';
+import { fetchCountries } from './fetchCountries';
 //import assert from 'assert';
 import debounce from 'lodash.debounce';
 import Notiflix from 'notiflix';
@@ -13,9 +14,8 @@ input.addEventListener('input', debounce(handleInput, DEBOUNCE_DELAY));
 
     function handleInput(event){
         inputValue = event.target.value.trim();
-        console.log(inputValue);
-    if(inputValue.length > 1) {
-        fetch(`https://restcountries.com/v3.1/name/${inputValue}?fields=name,capital,population,flags,languages`)
+        if (inputValue.length > 1) {
+            fetchCountries(inputValue)
         .then(response => {
             if (!response.ok) {
                 throw new Error(response.status);
@@ -24,23 +24,23 @@ input.addEventListener('input', debounce(handleInput, DEBOUNCE_DELAY));
         })
         .then(data => {
             fillContainers(data);
-            console.log(data);
         })
         .catch(error => {
-            Notiflix.Notify.failure('There is no country with that name');
+            Notiflix.Notify.failure("Oops, there is no country with that name");
             clearContainers();
         });
     } else if (inputValue.length <= 1) {
-        Notiflix.Notify.info('Not enough characters. Enter enough information');
-    }
+            Notiflix.Notify.info("Too many matches found. Please enter a more specific name.");
+            clearContainers();
+        }
     }
 
 
-function fillContainers(countries) { 
+function fillContainers(countries) {
     clearContainers();
-    if (countries.length > 1) {
+    if (countries.length > 1 && countries.length <= 10) {
         fillCountriesList(countries);
-    } else if (countries.length === 1){
+    } else if (countries.length === 1) {
         fillCountryInfo(countries[0]);
     }
 }
@@ -60,9 +60,9 @@ function fillCountriesList(countries) {
 function fillCountryInfo(country) { 
     html = `<ul class="coutry">
         <li><img class="flag_svg" src="${country.flags.svg}" alt="flag" width="40"> <span>${country.name.official}</span></li>
-        <li><b>Capital:</b>${country.capital}</li>
-        <li><b>Population:</b>${country.population}</li>
-        <li><b>Languages:</b>${country.languages}</li>
+        <li><b>Capital: </b>${country.capital}</li>
+        <li><b>Population: </b>${country.population}</li>
+        <li><b>Languages: </b>${Object.values(country.languages).join(', ')}</li>
         </ul>`;
     countryInfo.insertAdjacentHTML("afterbegin", html);
 }
@@ -70,4 +70,5 @@ function fillCountryInfo(country) {
 function clearContainers() { 
     ulList.innerHTML = '';
     countryInfo.innerHTML = '';
+    
 }
