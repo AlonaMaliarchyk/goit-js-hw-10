@@ -14,7 +14,7 @@ input.addEventListener('input', debounce(handleInput, DEBOUNCE_DELAY));
 
 function handleInput(event) {
     inputValue = event.target.value.trim();
-    if (inputValue.length > 1) {
+    if (inputValue.length > 0) {
         fetchCountries(inputValue)
             .then(response => {
                 if (!response.ok) {
