@@ -29,6 +29,8 @@ function handleInput(event) {
                 clearContainers();
                 Notiflix.Notify.failure("Oops, there is no country with that name");
             });
+    } else {
+        clearContainers();
     }
 }
 
@@ -38,7 +40,7 @@ function fillContainers(countries) {
         fillCountriesList(countries);
     } else if (countries.length === 1) {
         fillCountryInfo(countries[0]);
-    } else if (countries.length > 10) { 
+    } else if (countries.length >= 10) { 
         Notiflix.Notify.info("Too many matches found. Please enter a more specific name.");
     }
 }
